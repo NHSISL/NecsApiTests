@@ -398,3 +398,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/NecsApi.Tests.Integrations/appsettings.Development.json
