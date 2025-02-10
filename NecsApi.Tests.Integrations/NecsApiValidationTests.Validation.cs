@@ -989,8 +989,11 @@ namespace NecsApi.Tests.Integrations
             actualResponse.Results.FirstOrDefault().RowNumber.Should()
                 .BeEquivalentTo(randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault().RowNumber);
 
-            actualResponse.Results.FirstOrDefault().NhsNumber.Should().Be("0000000000");
-            actualResponse.Results.FirstOrDefault().Message.Should().Be("Pseudo could not be matched with NHS number.");
+            actualResponse.Results.FirstOrDefault().NhsNumber
+                .Should().Be("0000000000");
+
+            actualResponse.Results.FirstOrDefault().Message
+                .Should().Be("Pseudo could not be matched with a NHS number.");
         }
 
         [Fact(DisplayName = "Validation - 2.19 - Success")]
