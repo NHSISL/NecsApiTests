@@ -4,8 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
+using CsvHelper;
 using Microsoft.Extensions.Configuration;
 using NecsApi.Tests.Integrations.Models;
 using NecsApi.Tests.Integrations.Models.NECS.Requests;
@@ -64,6 +68,29 @@ namespace NecsApi.Tests.Integrations
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static NecsReIdentificationRequest CreateRandomNecsReIdentificationRequest(
+            List<LinkedItem> linkedItems) =>
+            CreateNecsReIdentificationRequestFiller(linkedItems).Create();
+
+        private static Filler<NecsReIdentificationRequest> CreateNecsReIdentificationRequestFiller(
+            List<LinkedItem> linkedItems)
+        {
+            List<NecsPseudonymisedItem> pseudonymisedNumbers = linkedItems
+                .Select((item, index) => new NecsPseudonymisedItem
+                {
+                    RowNumber = item.RowNumber,
+                    Pseudo = item.Pseudo
+                })
+                .ToList();
+
+            var filler = new Filler<NecsReIdentificationRequest>();
+
+            filler.Setup()
+                .OnProperty(request => request.PseudonymisedNumbers).Use(pseudonymisedNumbers);
+
+            return filler;
+        }
+
         private static NecsReIdentificationRequest CreateRandomNecsReIdentificationRequest(int count) =>
             CreateNecsReIdentificationRequestFiller(count).Create();
 
@@ -71,9 +98,9 @@ namespace NecsApi.Tests.Integrations
         {
             var filler = new Filler<NecsReIdentificationRequest>();
 
-            filler
-                .Setup()
+            filler.Setup()
                 .OnProperty(request => request.PseudonymisedNumbers).Use(CreateRandomNecsPseudonymisedItems(count));
+
             return filler;
         }
 
@@ -103,6 +130,35 @@ namespace NecsApi.Tests.Integrations
                 "Organisation",
                 "Reason"
             };
+        }
+
+        public static List<LinkedItem> GetRandomLinkedItems(int itemCount)
+        {
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            char separator = Path.DirectorySeparatorChar;
+            string testDataFilePath = Path.Combine(assembly, $"Resources{separator}testdata.csv");
+            List<LinkedItem> linkedItems = new List<LinkedItem>();
+
+            using (var reader = new StreamReader(testDataFilePath))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                while (csv.Read())
+                {
+                    var linkedItem = new LinkedItem
+                    {
+                        Pseudo = csv.GetField(0),
+                        NhsNumber = csv.GetField(1),
+                        RowNumber = Guid.NewGuid().ToString()
+                    };
+
+                    linkedItems.Add(linkedItem);
+                }
+            }
+
+            return linkedItems
+                .OrderBy(_ => Guid.NewGuid())
+                    .Take(itemCount)
+                        .ToList();
         }
     }
 }

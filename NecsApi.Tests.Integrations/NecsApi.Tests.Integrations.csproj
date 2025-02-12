@@ -10,6 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CsvHelper" Version="33.0.1" />
 		<PackageReference Include="Moq" Version="4.20.72" />
 		<PackageReference Include="CompareNETObjects" Version="4.83.0" />
 		<PackageReference Include="DeepCloner" Version="0.10.4" />
@@ -47,6 +48,13 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NecsApi.Tests.Integrations.Models;
 using NecsApi.Tests.Integrations.Models.NECS.Requests;
 using NecsApi.Tests.Integrations.Models.NECS.Responses;
 using Newtonsoft.Json;
@@ -954,12 +955,12 @@ namespace NecsApi.Tests.Integrations
                     item.Message.Should().Be("Pseudo number cannot be empty.");
                 }
                 else
-                { 
+                {
                     item.Message.Should().Be("Pseudo number must be exactly 10 digits.");
                 }
             }
         }
-        
+
 
         [Fact(DisplayName = "Validation - 2.18 - Unmatched pseudo validation")]
         public async Task ShouldThrowValidationErrorWhenPseudoNotMatchedAsync()
@@ -1044,6 +1045,56 @@ namespace NecsApi.Tests.Integrations
                 var item = actualResponse.Results[i];
                 item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
                 item.NhsNumber.Should().NotBeNullOrWhiteSpace();
+                item.Message.Should().Be("OK");
+            }
+        }
+
+        [Fact(DisplayName = "Validation - 2.20 - Success")]
+        public async Task ShouldRetrieveRandomRecordsFromTheDataFileAndValidateIfCorrectlyIdentifiedAsync()
+        {
+            // Given
+            int itemCount = 500;
+            List<LinkedItem> linkedItems = GetRandomLinkedItems(itemCount);
+
+            NecsReIdentificationRequest randomReIdentificationRequest =
+                CreateRandomNecsReIdentificationRequest(linkedItems);
+
+            var randomRequest = new
+            {
+                randomReIdentificationRequest.RequestId,
+                randomReIdentificationRequest.PseudonymisedNumbers,
+                randomReIdentificationRequest.UserIdentifier,
+                randomReIdentificationRequest.Organisation,
+                randomReIdentificationRequest.Reason
+            };
+
+            var jsonContent = new StringContent(
+                JsonConvert.SerializeObject(randomRequest),
+                Encoding.UTF8,
+                "application/json");
+
+            // When
+            var response = await httpClient.PostAsync(necsConfiguration.ApiUrl, jsonContent);
+            string actualContent = await response.Content.ReadAsStringAsync();
+            var actualResponse = JsonConvert.DeserializeObject<NecsReIdentificationResponse>(actualContent);
+
+            // Then
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            actualResponse.Results.FirstOrDefault().RowNumber.Should()
+                .BeEquivalentTo(randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault().RowNumber);
+
+            for (int i = 0; i < actualResponse.Results.Count; i++)
+            {
+                var input = randomReIdentificationRequest.PseudonymisedNumbers[i];
+                var item = actualResponse.Results[i];
+                item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
+                item.NhsNumber.Should().NotBeNullOrWhiteSpace();
+
+                string expectedNhsNumber = linkedItems
+                    .FirstOrDefault(linkedItem => linkedItem.RowNumber == item.RowNumber)?.NhsNumber;
+
+                item.NhsNumber.Should().Be(expectedNhsNumber);
                 item.Message.Should().Be("OK");
             }
         }
