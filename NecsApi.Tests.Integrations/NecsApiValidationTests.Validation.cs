@@ -1049,7 +1049,7 @@ namespace NecsApi.Tests.Integrations
             }
         }
 
-        [Fact(DisplayName = "Validation - 2.20 - Success")]
+        [Fact(DisplayName = "Validation - 2.20 - Success test using test data file")]
         public async Task ShouldRetrieveRandomRecordsFromTheDataFileAndValidateIfCorrectlyIdentifiedAsync()
         {
             // Given
