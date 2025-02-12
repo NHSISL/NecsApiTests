@@ -56,7 +56,7 @@ namespace NecsApi.Tests.Integrations
         private static string GenerateRandom10DigitNumber()
         {
             Random random = new Random();
-            var randomNumber = random.Next(1000000000, 2000000000).ToString();
+            var randomNumber = random.Next(1923366278, 1932457186).ToString();
 
             return randomNumber;
         }
