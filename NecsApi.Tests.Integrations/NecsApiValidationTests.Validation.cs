@@ -275,7 +275,7 @@ namespace NecsApi.Tests.Integrations
             // Given
             var expectedErrors = new Dictionary<string, string[]>
             {
-                { "RequestId", new[] { "The RequestId field is required and the value must be a valid Guid." } },
+                { "RequestId", new[] { "The RequestId field is required.","The Guid value cannot be null." } },
             };
 
             var expectedResponse = new
@@ -690,11 +690,11 @@ namespace NecsApi.Tests.Integrations
             // Given
             var expectedErrors = new Dictionary<string, string[]>
             {
-                { "Reason", new[] { "The Reason is required." } },
-                { "RequestId", new[] { "The RequestId is required." } },
-                { "Organisation", new[] { "The Organisation is required." } },
-                { "UserIdentifier", new[] { "The UserIdentifier is required." } },
-                { "PseudonymisedNumbers", new[] { "The PseudonymisedNumbers is required." } }
+                { "Reason", new[] { "The Reason field is required." } },
+                { "RequestId", new[] { "The RequestId field is required." , "The Guid value cannot be null." } },
+                { "Organisation", new[] { "The Organisation field is required." } },
+                { "UserIdentifier", new[] { "The UserIdentifier field is required." } },
+                { "PseudonymisedNumbers", new[] { "The PseudonymisedNumbers field is required." } }
             };
 
             var expectedResponse = new
@@ -949,9 +949,17 @@ namespace NecsApi.Tests.Integrations
                 var item = actualResponse.Results[i];
                 item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
                 item.NhsNumber.Should().Be("0000000000");
-                item.Message.Should().Be("Pseudo number must be exactly 10 digits.");
+                if (string.IsNullOrEmpty(input.Pseudo))
+                {
+                    item.Message.Should().Be("Pseudo number cannot be empty.");
+                }
+                else
+                { 
+                    item.Message.Should().Be("Pseudo number must be exactly 10 digits.");
+                }
             }
         }
+        
 
         [Fact(DisplayName = "Validation - 2.18 - Unmatched pseudo validation")]
         public async Task ShouldThrowValidationErrorWhenPseudoNotMatchedAsync()
