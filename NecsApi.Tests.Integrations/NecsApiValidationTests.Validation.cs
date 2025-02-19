@@ -911,13 +911,13 @@ namespace NecsApi.Tests.Integrations
             int randomCount = GetRandomNumber();
 
             NecsReIdentificationRequest randomReIdentificationRequest =
-                CreateRandomNecsReIdentificationRequest(count: 4);
+                CreateRandomNecsReIdentificationRequest(count: 5);
 
             randomReIdentificationRequest.PseudonymisedNumbers[0].Pseudo = "";
             randomReIdentificationRequest.PseudonymisedNumbers[1].Pseudo = "A";
             randomReIdentificationRequest.PseudonymisedNumbers[2].Pseudo = "1";
             randomReIdentificationRequest.PseudonymisedNumbers[3].Pseudo = "01234567890";
-
+            randomReIdentificationRequest.PseudonymisedNumbers[4].Pseudo = "01234567898754321";
             var randomRequest = new
             {
                 randomReIdentificationRequest.RequestId,
@@ -949,13 +949,15 @@ namespace NecsApi.Tests.Integrations
                 var item = actualResponse.Results[i];
                 item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
                 item.NhsNumber.Should().Be("0000000000");
-                if (string.IsNullOrEmpty(input.Pseudo))
+                
+                switch(i)
                 {
-                    item.Message.Should().Be("Pseudo number cannot be empty.");
-                }
-                else
-                { 
-                    item.Message.Should().Be("Pseudo number must be exactly 10 digits.");
+                    case 0: item.Message.Should().Be("Pseudo number cannot be empty.");break;
+                    case 1: item.Message.Should().Be("Pseudo must be numeric."); break;
+                    case 2: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
+                    case 3: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
+                    case 4: item.Message.Should().Be("Pseudo must not exceed 15 digits."); break;
+
                 }
             }
         }
