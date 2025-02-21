@@ -106,9 +106,13 @@ namespace NecsApi.Tests.Integrations
 
         private static List<NecsPseudonymisedItem> CreateRandomNecsPseudonymisedItems(int count)
         {
-            return CreateNecsPseudonymisedItemFiller()
-                .Create(count)
-                    .ToList();
+            var items = GetRandomLinkedItems(itemCount: count);
+
+            return items.Select((item, index) => new NecsPseudonymisedItem
+            {
+                RowNumber = item.RowNumber,
+                Pseudo = item.Pseudo
+            }).ToList();
         }
 
         private static Filler<NecsPseudonymisedItem> CreateNecsPseudonymisedItemFiller()

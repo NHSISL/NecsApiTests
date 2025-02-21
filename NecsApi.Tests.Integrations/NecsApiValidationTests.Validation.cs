@@ -950,17 +950,17 @@ namespace NecsApi.Tests.Integrations
                 var item = actualResponse.Results[i];
                 item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
                 item.NhsNumber.Should().Be("0000000000");
-                
-                switch(i)
+
+                switch (i)
                 {
-                    case 0: item.Message.Should().Be("Pseudo number cannot be empty.");break;
+                    case 0: item.Message.Should().Be("Pseudo number cannot be empty."); break;
                     case 1: item.Message.Should().Be("Pseudo must be numeric."); break;
                     case 2: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
                     case 3: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
                     case 4: item.Message.Should().Be("Pseudo must not exceed 15 digits."); break;
+                }
             }
         }
-
 
         [Fact(DisplayName = "Validation - 2.18 - Unmatched pseudo validation")]
         public async Task ShouldThrowValidationErrorWhenPseudoNotMatchedAsync()
@@ -1006,7 +1006,7 @@ namespace NecsApi.Tests.Integrations
         }
 
         [Fact(DisplayName = "Validation - 2.19 - Success")]
-        public async Task ShouldWithNoErrorsIfAllValidationIsCorrectAsync()
+        public async Task ShouldSucceedWithNoErrorsIfAllValidationIsCorrectAsync()
         {
             // Given
             int randomCount = GetRandomNumber();
