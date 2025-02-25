@@ -48,6 +48,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\nhsdtestrange.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
