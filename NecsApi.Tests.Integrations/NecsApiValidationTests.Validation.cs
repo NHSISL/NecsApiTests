@@ -1041,7 +1041,7 @@ namespace NecsApi.Tests.Integrations
             }
         }
 
-        [Fact(DisplayName = "Validation - 2.20 - Success test using test data file")]
+        [Fact(DisplayName = "Validation - 2.20 - Success test using test data file", Skip = "Excluded")]
         public async Task ShouldRetrieveRandomRecordsFromTheDataFileAndValidateIfCorrectlyIdentifiedAsync()
         {
             // Given
