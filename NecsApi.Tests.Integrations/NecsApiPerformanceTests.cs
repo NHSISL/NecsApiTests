@@ -141,7 +141,7 @@ namespace NecsApi.Tests.Integrations
         {
             string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             char separator = Path.DirectorySeparatorChar;
-            string testDataFilePath = Path.Combine(assembly, $"Resources{separator}testdata.csv");
+            string testDataFilePath = Path.Combine(assembly, $"Resources{separator}nhsdtestrange.csv");
             List<LinkedItem> linkedItems = new List<LinkedItem>();
 
             using (var reader = new StreamReader(testDataFilePath))
