@@ -909,7 +909,7 @@ namespace NecsApi.Tests.Integrations
         [Theory(DisplayName = "Validation - 2.14 - Validations Missing")]
         [InlineData("", "Pseudo number cannot be empty.")]
         [InlineData("A", "Pseudo must be numeric.")]
-        [InlineData("19", "Pseudo could not be matched with a NHS number.")]
+        [InlineData("9", "Pseudo could not be matched with a NHS number.")]
         [InlineData("01234567890", "Pseudo could not be matched with a NHS number.")]
         [InlineData("01234567898754321", "Pseudo must not exceed 15 digits.")]
         public async Task ShouldThrowValidationErrorWhenPseudoIsInvalidAsync(string pseudo, string message)
