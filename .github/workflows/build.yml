@@ -1,0 +1,33 @@
+name: Build
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    types:
+    - opened
+    - synchronize
+    - reopened
+    - closed
+    branches:
+    - main
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v3
+    - name: Setup .Net
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.100
+    - name: Restore
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    env:
+      NECSREIDENTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NECSREIDENTIFICATIONCONFIGURATIONS__APIKEY }}
+      NECSREIDENTIFICATIONCONFIGURATIONS__APIURL: ${{ secrets.NECSREIDENTIFICATIONCONFIGURATIONS__APIURL }}
