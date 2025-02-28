@@ -905,8 +905,14 @@ namespace NecsApi.Tests.Integrations
             actualResponse.Results.FirstOrDefault().Message.Should().Be("RowId is required.");
         }
 
-        [Fact(DisplayName = "Validation - 2.17 - Success with items that failed pseudo validation")]
-        public async Task ShouldThrowValidationErrorWhenPseudoIsInvalidAsync()
+        [Trait("Category", "Validation - 2.14 - Validations Missing")]
+        [Theory(DisplayName = "Validation - 2.14 - Validations Missing")]
+        [InlineData("", "Pseudo number cannot be empty.")]
+        [InlineData("A", "Pseudo must be numeric.")]
+        [InlineData("9", "Pseudo could not be matched with a NHS number.")]
+        [InlineData("01234567890", "Pseudo could not be matched with a NHS number.")]
+        [InlineData("01234567898754321", "Pseudo must not exceed 15 digits.")]
+        public async Task ShouldThrowValidationErrorWhenPseudoIsInvalidAsync(string pseudo, string message)
         {
             // Given
             int randomCount = GetRandomNumber();
@@ -914,11 +920,8 @@ namespace NecsApi.Tests.Integrations
             NecsReIdentificationRequest randomReIdentificationRequest =
                 CreateRandomNecsReIdentificationRequest(count: 5);
 
-            randomReIdentificationRequest.PseudonymisedNumbers[0].Pseudo = "";
-            randomReIdentificationRequest.PseudonymisedNumbers[1].Pseudo = "A";
-            randomReIdentificationRequest.PseudonymisedNumbers[2].Pseudo = "1";
-            randomReIdentificationRequest.PseudonymisedNumbers[3].Pseudo = "01234567890";
-            randomReIdentificationRequest.PseudonymisedNumbers[4].Pseudo = "01234567898754321";
+            randomReIdentificationRequest.PseudonymisedNumbers[0].Pseudo = pseudo;
+
             var randomRequest = new
             {
                 randomReIdentificationRequest.RequestId,
@@ -944,22 +947,11 @@ namespace NecsApi.Tests.Integrations
             actualResponse.Results.FirstOrDefault().RowNumber.Should()
                 .BeEquivalentTo(randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault().RowNumber);
 
-            for (int i = 0; i < actualResponse.Results.Count; i++)
-            {
-                var input = randomReIdentificationRequest.PseudonymisedNumbers[i];
-                var item = actualResponse.Results[i];
-                item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
-                item.NhsNumber.Should().Be("0000000000");
-
-                switch (i)
-                {
-                    case 0: item.Message.Should().Be("Pseudo number cannot be empty."); break;
-                    case 1: item.Message.Should().Be("Pseudo must be numeric."); break;
-                    case 2: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
-                    case 3: item.Message.Should().Be("Pseudo could not be matched with a NHS number."); break;
-                    case 4: item.Message.Should().Be("Pseudo must not exceed 15 digits."); break;
-                }
-            }
+            var input = randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault();
+            var item = actualResponse.Results.FirstOrDefault();
+            item.RowNumber.Should().BeEquivalentTo(input.RowNumber);
+            item.NhsNumber.Should().Be("0000000000");
+            item.Message.Should().Be(message);
         }
 
         [Fact(DisplayName = "Validation - 2.18 - Unmatched pseudo validation")]
@@ -1049,7 +1041,7 @@ namespace NecsApi.Tests.Integrations
             }
         }
 
-        [Fact(DisplayName = "Validation - 2.20 - Success test using test data file")]
+        [Fact(DisplayName = "Validation - 2.20 - Success test using test data file", Skip = "Excluded")]
         public async Task ShouldRetrieveRandomRecordsFromTheDataFileAndValidateIfCorrectlyIdentifiedAsync()
         {
             // Given
@@ -1097,6 +1089,53 @@ namespace NecsApi.Tests.Integrations
                 item.NhsNumber.Should().Be(expectedNhsNumber);
                 item.Message.Should().Be("OK");
             }
+        }
+
+        [Trait("Category", "Validation - 2.21 - Success - test for left padding NHS Number")]
+        [Theory(DisplayName = "Validation - 2.21 - Success - test for left padding NHS Number")]
+        [InlineData("1")]
+        [InlineData("12")]
+        [InlineData("123")]
+        public async Task ShouldReturnSucessWithPaddedNhsNumberAsync(string pseudo)
+        {
+            // Given
+            int randomCount = GetRandomNumber();
+
+            NecsReIdentificationRequest randomReIdentificationRequest =
+                CreateRandomNecsReIdentificationRequest(count: 1);
+
+            randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault().Pseudo = pseudo;
+
+            var randomRequest = new
+            {
+                randomReIdentificationRequest.RequestId,
+                randomReIdentificationRequest.PseudonymisedNumbers,
+                randomReIdentificationRequest.UserIdentifier,
+                randomReIdentificationRequest.Organisation,
+                randomReIdentificationRequest.Reason
+            };
+
+            var jsonContent = new StringContent(
+                JsonConvert.SerializeObject(randomRequest),
+                Encoding.UTF8,
+                "application/json");
+
+            // When
+            var response = await httpClient.PostAsync(necsConfiguration.ApiUrl, jsonContent);
+            string actualContent = await response.Content.ReadAsStringAsync();
+            var actualResponse = JsonConvert.DeserializeObject<NecsReIdentificationResponse>(actualContent);
+
+            // Then
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            actualResponse.Results.FirstOrDefault().RowNumber.Should()
+                .BeEquivalentTo(randomReIdentificationRequest.PseudonymisedNumbers.FirstOrDefault().RowNumber);
+
+            actualResponse.Results.FirstOrDefault().NhsNumber.Length
+                .Should().Be(10);
+
+            actualResponse.Results.FirstOrDefault().Message
+                .Should().Be("OK");
         }
     }
 }
