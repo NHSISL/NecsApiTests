@@ -60,6 +60,14 @@ namespace NecsApi.Tests.Integrations
             return result.Length > length ? result.Substring(0, length) : result;
         }
 
+        private static string GenerateRandom10DigitNumber()
+        {
+            Random random = new Random();
+            var randomNumber = random.Next(1923366278, 1932457186).ToString();
+
+            return randomNumber;
+        }
+
         private static NecsReIdentificationRequest CreateRandomNecsReIdentificationRequest(
             List<LinkedItem> linkedItems) =>
             CreateNecsReIdentificationRequestFiller(linkedItems).Create();
@@ -110,7 +118,7 @@ namespace NecsApi.Tests.Integrations
 
             filler.Setup()
                 .OnProperty(address => address.Pseudo)
-                    .Use(GetRandomStringWithLengthOf(10));
+                    .Use(GenerateRandom10DigitNumber());
 
             return filler;
         }
