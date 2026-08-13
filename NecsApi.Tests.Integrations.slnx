@@ -1,4 +1,4 @@
 ﻿<Solution>
   <Project Path="NecsApi.Tests.Integrations/NecsApi.Tests.Integrations.csproj" />
-  <Project Path="NecsApi.Tests.Integrations.Infrastructure/NecsApi.Tests.Integrations.Infrastructure.csproj" />
+  <Project Path="NecsApi.Infrastructure/NecsApi.Infrastructure.csproj" />
 </Solution>

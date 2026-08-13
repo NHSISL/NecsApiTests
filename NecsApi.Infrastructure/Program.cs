@@ -1,10 +1,10 @@
-// ---------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using NecsApi.Tests.Integrations.Infrastructure.Services;
+using NecsApi.Infrastructure.Services;
 
-namespace NecsApi.Tests.Integrations.Infrastructure
+namespace NecsApi.Infrastructure
 {
     internal class Program
     {
