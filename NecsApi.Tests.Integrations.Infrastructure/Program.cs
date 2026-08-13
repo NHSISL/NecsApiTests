@@ -14,7 +14,7 @@ namespace NecsApi.Tests.Integrations.Infrastructure
 
             scriptGenerationService.GenerateBuildScript(
                 branchName: "main",
-                dotNetVersion: "10.0.100");
+                dotNetVersion: "10.x");
 
             scriptGenerationService.GeneratePrLintScript(branchName: "main");
         }
