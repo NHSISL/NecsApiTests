@@ -15,7 +15,6 @@ using NecsApi.Tests.Integrations.Models;
 using NecsApi.Tests.Integrations.Models.NECS.Requests;
 using RESTFulSense.Clients;
 using Tynamix.ObjectFiller;
-using Xunit.Abstractions;
 
 namespace NecsApi.Tests.Integrations
 {
