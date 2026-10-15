@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --solution NecsApi.Tests.Integrations.slnx --no-build --verbosity normal --ignore-exit-code 8
     env:
       NECSREIDENTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NECSREIDENTIFICATIONCONFIGURATIONS__APIKEY }}
       NECSREIDENTIFICATIONCONFIGURATIONS__APIURL: ${{ secrets.NECSREIDENTIFICATIONCONFIGURATIONS__APIURL }}

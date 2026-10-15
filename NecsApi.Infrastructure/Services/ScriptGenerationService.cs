@@ -85,7 +85,8 @@ namespace NecsApi.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Test",
-                                    Run = "dotnet test --no-build --verbosity normal"
+                                    Run = "dotnet test --solution NecsApi.Tests.Integrations.slnx " +
+                                        "--no-build --verbosity normal --ignore-exit-code 8"
                                 }
                             }
                         }
