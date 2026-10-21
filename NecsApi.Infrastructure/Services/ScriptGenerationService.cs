@@ -41,7 +41,7 @@ namespace NecsApi.Infrastructure.Services
                         new Job
                         {
                             Name = "Build",
-                            RunsOn = BuildMachines.WindowsLatest,
+                            RunsOn = BuildMachines.UbuntuLatest,
 
                             EnvironmentVariables = new Dictionary<string, string>
                             {
